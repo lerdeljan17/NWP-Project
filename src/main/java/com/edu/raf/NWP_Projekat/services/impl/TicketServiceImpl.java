@@ -1,11 +1,10 @@
 package com.edu.raf.NWP_Projekat.services.impl;
 
-import com.edu.raf.NWP_Projekat.model.Company;
-import com.edu.raf.NWP_Projekat.model.Flight;
-import com.edu.raf.NWP_Projekat.model.Reservation;
-import com.edu.raf.NWP_Projekat.model.Ticket;
+import com.edu.raf.NWP_Projekat.jwt.JwtProvider;
+import com.edu.raf.NWP_Projekat.model.*;
 import com.edu.raf.NWP_Projekat.model.modelDTO.TicketDto;
 import com.edu.raf.NWP_Projekat.model.modelDTO.TicketResponseDto;
+import com.edu.raf.NWP_Projekat.model.security.LoginRequest;
 import com.edu.raf.NWP_Projekat.repositories.CompanyRepository;
 import com.edu.raf.NWP_Projekat.repositories.FlightRepository;
 import com.edu.raf.NWP_Projekat.repositories.TicketRepository;
@@ -14,12 +13,20 @@ import com.edu.raf.NWP_Projekat.services.TicketService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @NoArgsConstructor
@@ -39,6 +46,7 @@ public class TicketServiceImpl implements TicketService {
     @Autowired
     private ReservationService reservationService;
 
+
     @Override
     public boolean deleteTicket(Long id) {
         Optional<Ticket> optionalTicket = this.ticketRepository.findById(id);
@@ -54,7 +62,7 @@ public class TicketServiceImpl implements TicketService {
     public TicketDto updateTicket(Long id, TicketDto newTicket) {
         Ticket ticket = this.ticketRepository.findById(id).orElseThrow(()->new RuntimeException("Ticket sa ID-jem " + id + " ne postoji!"));
 
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.UK);
         if(newTicket.getDepartDate() != null && !newTicket.getDepartDate().isEmpty()){
             ticket.setDepartDate(LocalDate.parse(newTicket.getDepartDate(), dateTimeFormatter));
         }
@@ -222,6 +230,8 @@ public class TicketServiceImpl implements TicketService {
         }
         return ticketDtos;
     }
+
+
 
 
 }

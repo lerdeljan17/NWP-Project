@@ -76,9 +76,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public ReservationDto addReservation(ReservationDto reservationDto) {
-        Ticket ticket = this.ticketRepository.findById(reservationDto.getTicket()).orElseThrow(()->new RuntimeException("Ticket sa ID-jem " + reservationDto.getTicket() + " ne postoji!"));
-        Flight flight = this.flightRepository.findById(reservationDto.getFlight()).orElseThrow(()->new RuntimeException("Flight sa ID-jem " + reservationDto.getFlight() + " ne postoji!"));
-        User user = this.userRepository.findById(reservationDto.getUser()).orElseThrow(()->new RuntimeException("User sa ID-jem " + reservationDto.getUser() + " ne postoji!"));;
+        Ticket ticket = this.ticketRepository.findById(reservationDto.getTicket()).orElseThrow(()->new RuntimeException("Ticket does not exist"));
+        Flight flight = this.flightRepository.findById(reservationDto.getFlight()).orElseThrow(()->new RuntimeException("Flight does not exist"));
+        User user = this.userRepository.findByUsername(reservationDto.getUsername()).orElseThrow(()->new RuntimeException("User does not exist"));;
 
         //TODO Da li su ovde neophodne provere?
         if(reservationDto.getIsAvailable() == null){
@@ -88,6 +88,7 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = Reservation.builder()
                 .id(reservationDto.getId())
                 .ticket(ticket)
+                .count(reservationDto.getCount())
                 .flight(flight)
                 .user(user)
                 .isAvailable(reservationDto.getIsAvailable())
