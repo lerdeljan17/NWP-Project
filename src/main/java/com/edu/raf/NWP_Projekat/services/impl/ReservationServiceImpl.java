@@ -1,5 +1,6 @@
 package com.edu.raf.NWP_Projekat.services.impl;
 
+import com.edu.raf.NWP_Projekat.Exceptions.ReservationException;
 import com.edu.raf.NWP_Projekat.model.*;
 import com.edu.raf.NWP_Projekat.model.modelDTO.ReservationDto;
 import com.edu.raf.NWP_Projekat.model.modelDTO.TicketDto;
@@ -47,8 +48,9 @@ public class ReservationServiceImpl implements ReservationService {
             //System.out.println(departureDate.compareTo(currentDate));
             if(departureDate.compareTo(currentDate)< 1){
                 //TODO Exception
-                System.out.println("can only delete reservation up to 24h before flight departure");
-                return false;
+                throw new RuntimeException("can only delete reservation up to 24h before flight departure");
+//                System.out.println("can only delete reservation up to 24h before flight departure");
+//                return false;
             }
             this.reservationRepository.deleteById(id);
             return true;
@@ -97,7 +99,8 @@ public class ReservationServiceImpl implements ReservationService {
         Flight flight = this.flightRepository.findById(reservationDto.getFlight()).orElseThrow(()->new RuntimeException("Flight does not exist"));
         User user = this.userRepository.findByUsername(reservationDto.getUsername()).orElseThrow(()->new RuntimeException("User does not exist"));;
 
-        //TODO Da li su ovde neophodne provere?
+        if(reservationDto.getCount()<0)throw new ReservationException("Number of cards to reserve can not be negative value or null");
+
         if(reservationDto.getIsAvailable() == null){
             reservationDto.setIsAvailable(true);
         }
@@ -154,12 +157,14 @@ public class ReservationServiceImpl implements ReservationService {
 
         if(!reservation.getIsAvailable()){
             // TODO: 8.1.2021. Reservations is not available
-            return;
+            throw new ReservationException("Reservations is not available");
+//            return;
         }
 
         if(ticket.getCount() < count){
             // TODO: 8.1.2021. Exception more cards than abailable
-            return;
+            throw new ReservationException("Exception more cards than available");
+//            return;
         }
         reservationRepository.deleteById(reservation.getId());
 

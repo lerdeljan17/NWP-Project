@@ -1,5 +1,6 @@
 package com.edu.raf.NWP_Projekat.controllers;
 
+import com.edu.raf.NWP_Projekat.Exceptions.ReservationException;
 import com.edu.raf.NWP_Projekat.model.Flight;
 import com.edu.raf.NWP_Projekat.model.Ticket;
 import com.edu.raf.NWP_Projekat.model.modelDTO.FlightDto;
@@ -39,7 +40,7 @@ public class ReservationController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deleteReservation(@PathVariable Long id){
+    public ResponseEntity<?> deleteReservation(@PathVariable Long id) throws ReservationException {
         ReservationDto reservationDto = this.reservationService.getById(id);
 
         if(this.reservationService.deleteReservation(id)){

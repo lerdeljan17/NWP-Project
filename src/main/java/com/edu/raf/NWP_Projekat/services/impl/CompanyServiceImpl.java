@@ -41,7 +41,9 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public Company updateCompany(Long id, String name) {
-        Company company = this.companyRepository.findById(id).orElseThrow(()->new RuntimeException("Company sa ID-jem " + id + " ne postoji!"));
+        Company company = this.companyRepository.findById(id).orElseThrow(()->new RuntimeException("Company does not exist"));
+        if(getByName(company.getName()) != null)throw new RuntimeException("Company with name already exists");
+
         if(name != null && !name.isEmpty()){
             company.setName(name);
         }
@@ -55,6 +57,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public Company addCompany(Company company) {
+        if(getByName(company.getName()) != null)throw new RuntimeException("Company with name already exists");
         return this.companyRepository.save(company);
     }
 
@@ -75,7 +78,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public CompanyDto getById(Long id) {
-        Company company = this.companyRepository.findById(id).orElseThrow(()->new RuntimeException("Company sa ID-jem " + id + " ne postoji!"));
+        Company company = this.companyRepository.findById(id).orElseThrow(()->new RuntimeException("Company does not exist"));
         return Company.companyToDto(company);
     }
 

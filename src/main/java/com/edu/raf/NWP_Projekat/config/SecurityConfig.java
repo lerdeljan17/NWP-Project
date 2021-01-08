@@ -5,6 +5,7 @@ import com.edu.raf.NWP_Projekat.filter.JwtTokenAuthFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -36,9 +37,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+//        "/api/users/register"
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/users/register","/api/users/login").permitAll()
+                .antMatchers(HttpMethod.DELETE,"/api/companies/**").hasAuthority("admin")
+                .antMatchers(HttpMethod.POST,"/api/companies/**").hasAuthority("admin")
+                .antMatchers(HttpMethod.PUT,"/api/companies/**").hasAuthority("admin")
+
+                .antMatchers(HttpMethod.DELETE,"/api/tickets/**").hasAuthority("admin")
+                .antMatchers(HttpMethod.POST,"/api/tickets/**").hasAuthority("admin")
+                .antMatchers(HttpMethod.PUT,"/api/tickets/**").hasAuthority("admin")
+
+                .antMatchers(HttpMethod.POST,"/api/reservations/**").hasAuthority("user")
+
+                .antMatchers("api/users/register").hasAuthority("admin")
+
+                .antMatchers("/api/users/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()

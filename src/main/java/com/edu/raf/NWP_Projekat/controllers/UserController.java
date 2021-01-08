@@ -1,5 +1,6 @@
 package com.edu.raf.NWP_Projekat.controllers;
 
+import com.edu.raf.NWP_Projekat.Exceptions.UserException;
 import com.edu.raf.NWP_Projekat.model.User;
 import com.edu.raf.NWP_Projekat.model.modelDTO.UserDto;
 import com.edu.raf.NWP_Projekat.model.security.LoginRequest;
@@ -26,7 +27,7 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deleteCompany(@PathVariable Long id){
+    public ResponseEntity<?> deleteUser(@PathVariable Long id){
         if(this.userService.deleteUser(id)){
             return  ResponseEntity.ok().build();
         }
@@ -43,12 +44,12 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public UserDto addUser(@RequestBody User user){
+    public UserDto addUser(@RequestBody User user) throws UserException {
         List<String> types = new ArrayList<>();
         types.add("admin");types.add("user");
         if (!types.contains(user.getUserType())) {
             //TODO: 4.1.2021. error not a valid user type
-            return null;
+            throw new UserException("Not a valid user type");
         }
 
         return this.userService.addUser(user);

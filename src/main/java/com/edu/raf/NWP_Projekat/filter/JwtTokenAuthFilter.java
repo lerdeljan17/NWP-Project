@@ -23,7 +23,7 @@ public class JwtTokenAuthFilter extends OncePerRequestFilter {
     @Autowired
     private JwtValidator jwtValidator;
 
-    // TODO: 7.1.2021. da li i ovde treva qulifier
+
     @Autowired
     private UserDetailsService userDetailsService;
 

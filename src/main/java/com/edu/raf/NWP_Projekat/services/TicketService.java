@@ -1,5 +1,6 @@
 package com.edu.raf.NWP_Projekat.services;
 
+import com.edu.raf.NWP_Projekat.Exceptions.TicketException;
 import com.edu.raf.NWP_Projekat.model.Ticket;
 import com.edu.raf.NWP_Projekat.model.modelDTO.TicketDto;
 import com.edu.raf.NWP_Projekat.model.modelDTO.TicketResponseDto;
@@ -11,7 +12,7 @@ public interface TicketService {
 
     public TicketDto updateTicket(Long id, TicketDto newTicket);
 
-    public TicketDto addTicket(TicketDto ticketDto);
+    public TicketDto addTicket(TicketDto ticketDto) throws TicketException;
 
     public List<Ticket> searchTicket(String name);
 

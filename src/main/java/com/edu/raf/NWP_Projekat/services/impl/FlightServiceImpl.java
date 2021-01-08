@@ -1,5 +1,6 @@
 package com.edu.raf.NWP_Projekat.services.impl;
 
+import com.edu.raf.NWP_Projekat.Exceptions.FllightException;
 import com.edu.raf.NWP_Projekat.model.Company;
 import com.edu.raf.NWP_Projekat.model.Flight;
 import com.edu.raf.NWP_Projekat.model.Ticket;
@@ -41,7 +42,7 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public FlightDto updateFlight(Long id, FlightDto newFlight) {
-        Flight flight = this.flightRepository.findById(id).orElseThrow(()->new RuntimeException("Flight sa ID-jem " + id + " ne postoji!"));
+        Flight flight = this.flightRepository.findById(id).orElseThrow(()->new RuntimeException("Flight does not exist"));
 
         if(newFlight.getDestination() != null){
             flight.setDestination(cityRepository.findById(newFlight.getDestination().getId()).get());
@@ -52,6 +53,7 @@ public class FlightServiceImpl implements FlightService {
         }
 
         if(flight != null){
+            if(flight.getDestination().getId().equals(flight.getOrigin().getId()))throw new FllightException("origin and destination ca not be samo palce");
             this.flightRepository.save(flight);
             return Flight.flightToDto(flight);
         }
@@ -61,6 +63,7 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public FlightDto addFlight(Flight flight) {
+        if(flight.getDestination().getId().equals(flight.getOrigin().getId()))throw new FllightException("origin and destination ca not be samo palce");
         this.flightRepository.save(flight);
         return Flight.flightToDto(flight);
     }

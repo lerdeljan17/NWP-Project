@@ -39,7 +39,7 @@ public class Reservation {
 //    @JsonIgnore
     private User user;
 
-// TODO: 02/01/2021 manyTOone?
+
 
     @OneToOne
     @JoinColumn(name = "TICKET_ID", referencedColumnName = "ID", nullable = false)

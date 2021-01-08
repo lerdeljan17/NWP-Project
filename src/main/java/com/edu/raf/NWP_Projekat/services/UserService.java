@@ -13,11 +13,11 @@ public interface UserService {
 
     public boolean deleteUser(Long id);
 
-    LoginResponse login(LoginRequest loginRequest);
+    LoginResponse login(LoginRequest loginRequest) throws RuntimeException;
 
     public UserDto updateUser(Long id, User newUser);
 
-    public UserDto addUser(User user);
+    public UserDto addUser(User user) throws RuntimeException;
 
     public List<User> searchUser(String name);
 

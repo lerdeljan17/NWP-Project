@@ -1,5 +1,6 @@
 package com.edu.raf.NWP_Projekat.services.impl;
 
+import com.edu.raf.NWP_Projekat.Exceptions.TicketException;
 import com.edu.raf.NWP_Projekat.jwt.JwtProvider;
 import com.edu.raf.NWP_Projekat.model.*;
 import com.edu.raf.NWP_Projekat.model.modelDTO.TicketDto;
@@ -103,20 +104,30 @@ public class TicketServiceImpl implements TicketService {
             returnDate = LocalDate.parse(ticketDto.getReturnDate(), dateTimeFormatter);
             if(departureDate.isAfter(returnDate)){
                 // TODO: 6.1.2021. exeption za tiket koji ima depart posle returna
-                System.out.println("exeption za tiket koji ima depart posle returna");
-                return null;
+                throw new TicketException("Depart date can not be after return date");
+//                System.out.println("exeption za tiket koji ima depart posle returna");
+//                return null;
             }
         }
+        if(ticketDto.getCount()<1){
+            // TODO: 6.1.2021. exeption za tiket koji je oneway a prosledjen je datum
+            throw new TicketException("Ticket count must be at least one");
+//            System.out.println("exeption za tiket koji je oneway a prosledjen je datum");
+//            return null;
+        }
+
         if(ticketDto.getOneWay() == true && (ticketDto.getReturnDate() != null)){
             // TODO: 6.1.2021. exeption za tiket koji je oneway a prosledjen je datum
-            System.out.println("exeption za tiket koji je oneway a prosledjen je datum");
-            return null;
+            throw new TicketException("A one way ticket can not have a return date");
+//            System.out.println("exeption za tiket koji je oneway a prosledjen je datum");
+//            return null;
         }
 
         if(ticketDto.getOneWay() == false && (ticketDto.getReturnDate() == null)){
             // TODO: 6.1.2021. exeption za tiket koji je two way a nije prosledjen je datum
-            System.out.println("exeption za tiket koji je two way a nije prosledjen je datum ");
-            return null;
+            throw new TicketException("A two way ticket must have a return date");
+//            System.out.println("exeption za tiket koji je two way a nije prosledjen je datum ");
+//            return null;
         }
 
         Ticket ticket = Ticket.builder()
@@ -171,7 +182,7 @@ public class TicketServiceImpl implements TicketService {
 
         if(arrival!=null && departure!=null) {
             if (arrival.isBefore(departure)) {
-                //throw new AirTicketException("departure date must be minimum one day before arrival");
+                throw new TicketException("departure date must be before arrival");
             }
         }
         List<Ticket> toRemove = new ArrayList<>();
@@ -198,7 +209,7 @@ public class TicketServiceImpl implements TicketService {
 
         if(departure!=null){
             for (Ticket ticket : tickets) {
-                if (!ticket.getDepartDate().isAfter(departure)) {
+                if (ticket.getDepartDate().isBefore(departure)) {
                     toRemove.add(ticket);
                 }
             }
@@ -207,7 +218,7 @@ public class TicketServiceImpl implements TicketService {
         toRemove.clear();
         if(arrival!=null) {
             for (Ticket ticket : tickets) {
-                if (ticket.getReturnDate() == null || !ticket.getReturnDate().isBefore(arrival)) {
+                if (ticket.getReturnDate() == null || ticket.getReturnDate().isAfter(arrival)) {
                     toRemove.add(ticket);
                 }
             }
@@ -223,7 +234,7 @@ public class TicketServiceImpl implements TicketService {
 
 
     @Override
-    public List<TicketResponseDto> filterTicketsCompany(String origin, String destination,String departDate,String returnDate,String company) {
+    public List<TicketResponseDto> filterTicketsCompany(String origin, String destination, String departDate, String returnDate, String company) {
         List<Ticket> tickets = ticketRepository.getAllByCompanyName(company);
         List<TicketResponseDto> result = new ArrayList<>();
 
@@ -265,7 +276,7 @@ public class TicketServiceImpl implements TicketService {
 
         if(departure!=null){
             for (Ticket ticket : tickets) {
-                if (!ticket.getDepartDate().isAfter(departure)) {
+                if (ticket.getDepartDate().isBefore(departure)) {
                     toRemove.add(ticket);
                 }
             }
@@ -274,7 +285,7 @@ public class TicketServiceImpl implements TicketService {
         toRemove.clear();
         if(arrival!=null) {
             for (Ticket ticket : tickets) {
-                if (ticket.getReturnDate() == null || !ticket.getReturnDate().isBefore(arrival)) {
+                if (ticket.getReturnDate() == null || ticket.getReturnDate().isAfter(arrival)) {
                     toRemove.add(ticket);
                 }
             }
