@@ -6,6 +6,7 @@ import com.edu.raf.NWP_Projekat.model.modelDTO.CompanyDto;
 import com.edu.raf.NWP_Projekat.model.modelDTO.FlightDto;
 import com.edu.raf.NWP_Projekat.model.modelDTO.TicketDto;
 import com.edu.raf.NWP_Projekat.repositories.CompanyRepository;
+import com.edu.raf.NWP_Projekat.repositories.ReservationRepository;
 import com.edu.raf.NWP_Projekat.services.CompanyService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -24,10 +25,14 @@ public class CompanyServiceImpl implements CompanyService {
     @Autowired
     private CompanyRepository companyRepository;
 
+    @Autowired
+    private ReservationRepository reservationRepository;
+
     @Override
     public boolean deleteCompany(Long id) {
         Optional<Company> optionalCompany = this.companyRepository.findById(id);
         if(optionalCompany.isPresent()){
+            reservationRepository.deleteAllByTicket_Company_Id(id);
             this.companyRepository.deleteById(id);
             return true;
         }
@@ -72,5 +77,10 @@ public class CompanyServiceImpl implements CompanyService {
     public CompanyDto getById(Long id) {
         Company company = this.companyRepository.findById(id).orElseThrow(()->new RuntimeException("Company sa ID-jem " + id + " ne postoji!"));
         return Company.companyToDto(company);
+    }
+
+    @Override
+    public CompanyDto getByName(String name) {
+        return Company.companyToDto(companyRepository.getCompanyByName(name));
     }
 }

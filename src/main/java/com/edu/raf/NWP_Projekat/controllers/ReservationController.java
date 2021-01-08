@@ -41,15 +41,7 @@ public class ReservationController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<?> deleteReservation(@PathVariable Long id){
         ReservationDto reservationDto = this.reservationService.getById(id);
-        TicketDto ticket = this.ticketService.getById(reservationDto.getTicket());
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.UK);
-        LocalDate departureDate = LocalDate.parse(ticket.getDepartDate(), dateTimeFormatter);
-        LocalDate currentDate = LocalDate.now();
-        if(Duration.between(departureDate.atStartOfDay(), currentDate.atStartOfDay()).toDays() < 1){
-            //TODO Exception
-            System.out.println("-+--------------------------------------------------------------------");
-            return null;
-        }
+
         if(this.reservationService.deleteReservation(id)){
             return  ResponseEntity.ok().build();
         }
@@ -82,6 +74,14 @@ public class ReservationController {
     @GetMapping(value = "/userReservations")
     public List<ReservationsResponse> getById(@RequestParam(name = "username" ,required = true) String username){
         return userService.getUserBookings(username);
+    }
+
+
+    @GetMapping(value = "/buyReservations/{id}")
+    public void buyReservations(@PathVariable Long id,@RequestParam(name = "username") String username){
+//        System.out.println("------------------------------------------------------------");
+//        System.out.println(username);
+       reservationService.buyReservations(username,id);
     }
 
 

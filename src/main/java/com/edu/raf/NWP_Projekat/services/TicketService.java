@@ -21,5 +21,11 @@ public interface TicketService {
 
     List<TicketResponseDto> filterTickets(String origin, String destination, String departDate, String returnDate);
 
+    List<TicketResponseDto> filterTicketsCompany(String origin, String destination, String departDate, String returnDate, String comapny);
+
     List<TicketResponseDto> getAllByOneWayEquals(Boolean oneWay);
+
+    List<TicketResponseDto> getAllByCompanyName(String company);
+
+
 }

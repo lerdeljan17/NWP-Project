@@ -2,6 +2,7 @@ package com.edu.raf.NWP_Projekat.services.impl;
 
 import com.edu.raf.NWP_Projekat.model.*;
 import com.edu.raf.NWP_Projekat.model.modelDTO.ReservationDto;
+import com.edu.raf.NWP_Projekat.model.modelDTO.TicketDto;
 import com.edu.raf.NWP_Projekat.repositories.FlightRepository;
 import com.edu.raf.NWP_Projekat.repositories.ReservationRepository;
 import com.edu.raf.NWP_Projekat.repositories.TicketRepository;
@@ -10,8 +11,12 @@ import com.edu.raf.NWP_Projekat.services.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -29,10 +34,22 @@ public class ReservationServiceImpl implements ReservationService {
     @Autowired
     private TicketRepository ticketRepository;
 
+
     @Override
     public boolean deleteReservation(Long id) {
-        Optional<Reservation> optionalTicket = this.reservationRepository.findById(id);
-        if(optionalTicket.isPresent()){
+        Optional<Reservation> optionalReservation = this.reservationRepository.findById(id);
+        if(optionalReservation.isPresent()){
+            TicketDto ticket = Ticket.ticketToDto(this.ticketRepository.findById(optionalReservation.get().getTicket().getId()).get());
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.UK);
+            LocalDate departureDate = LocalDate.parse(ticket.getDepartDate(), dateTimeFormatter);
+            LocalDate currentDate = LocalDate.now();
+            //System.out.println(Duration.between(departureDate.atStartOfDay(), currentDate.atStartOfDay()).toDays());
+            //System.out.println(departureDate.compareTo(currentDate));
+            if(departureDate.compareTo(currentDate)< 1){
+                //TODO Exception
+                System.out.println("can only delete reservation up to 24h before flight departure");
+                return false;
+            }
             this.reservationRepository.deleteById(id);
             return true;
         }
@@ -125,5 +142,29 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public void deleteAllByTicket_Id(Long id) {
         reservationRepository.deleteAllByTicket_Id(id);
+    }
+
+    @Override
+    public void buyReservations(String username, Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(()->new RuntimeException("Reservation does not exist"));
+        User user = this.userRepository.findByUsername(username).orElseThrow(()->new RuntimeException("User does not exist"));
+        Ticket ticket = this.ticketRepository.findById(reservation.getTicket().getId()).orElseThrow(()->new RuntimeException("Ticket does not exist"));
+
+        int count = reservation.getCount();
+
+        if(!reservation.getIsAvailable()){
+            // TODO: 8.1.2021. Reservations is not available
+            return;
+        }
+
+        if(ticket.getCount() < count){
+            // TODO: 8.1.2021. Exception more cards than abailable
+            return;
+        }
+        reservationRepository.deleteById(reservation.getId());
+
+        ticket.setCount(ticket.getCount()-count);
+        reservationRepository.flush();
+
     }
 }

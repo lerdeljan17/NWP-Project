@@ -13,7 +13,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Query(value = "SELECT * FROM ticket_table t JOIN city_table c ON t.origin.id  " + )
     List<Ticket> findBySearchTerm(@Param("start") String origin, @Param("finish") String destination);
 */
+
     List<Ticket> getAllByOneWayEquals(boolean oneWay);
 
+    List<Ticket> getAllByCompanyName(String company);
 
 }

@@ -69,6 +69,21 @@ public class TicketController {
         return ticketService.filterTickets(origin,destination,departDate,returnDate);
     }
 
+    @GetMapping(value = "/filterTicketsCompany")
+    public List<TicketResponseDto> filterTicketsCompany(@RequestParam(name = "origin",required = false)String origin,
+                                                 @RequestParam(name = "destination",required = false)String destination,
+                                                 @RequestParam(name = "departDate",required = false)String departDate,
+                                                 @RequestParam(name = "returnDate",required = false)String returnDate,
+                                                 @RequestParam(name = "company",required = false)String company) {
+
+        return ticketService.filterTicketsCompany(origin,destination,departDate,returnDate,company);
+    }
+
+    @GetMapping("/company")
+    public List<TicketResponseDto> getAllByCompanyName(@RequestParam(name = "company")String company){
+        return ticketService.getAllByCompanyName(company);
+    }
+
 
 
 }

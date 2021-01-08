@@ -221,6 +221,73 @@ public class TicketServiceImpl implements TicketService {
         return result;
     }
 
+
+    @Override
+    public List<TicketResponseDto> filterTicketsCompany(String origin, String destination,String departDate,String returnDate,String company) {
+        List<Ticket> tickets = ticketRepository.getAllByCompanyName(company);
+        List<TicketResponseDto> result = new ArrayList<>();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate departure = null;
+        LocalDate arrival = null;
+        if(!departDate.isEmpty())
+            departure = LocalDate.parse(departDate, formatter);
+        if(!returnDate.isEmpty())
+            arrival = LocalDate.parse(returnDate,formatter);
+
+
+        if(arrival!=null && departure!=null) {
+            if (arrival.isBefore(departure)) {
+                //throw new AirTicketException("departure date must be minimum one day before arrival");
+            }
+        }
+        List<Ticket> toRemove = new ArrayList<>();
+        if(origin != null && !origin.equals("") && !origin.equals(" ")) {
+            for (Ticket ticket : tickets) {
+                if (!ticket.getFlight().getOrigin().getName().equals(origin)) {
+                    toRemove.add(ticket);
+                }
+            }
+        }
+        tickets.removeAll(toRemove);
+        System.out.println(tickets.size());
+        toRemove.clear();
+        if(destination != null && !destination.equals("") && !destination.equals(" ")) {
+            for (Ticket ticket : tickets) {
+                if (!ticket.getFlight().getDestination().getName().equals(destination)) {
+                    toRemove.add(ticket);
+                }
+            }
+        }
+        tickets.removeAll(toRemove);
+        System.out.println(tickets.size());
+        toRemove.clear();
+
+        if(departure!=null){
+            for (Ticket ticket : tickets) {
+                if (!ticket.getDepartDate().isAfter(departure)) {
+                    toRemove.add(ticket);
+                }
+            }
+        }
+        tickets.removeAll(toRemove);
+        toRemove.clear();
+        if(arrival!=null) {
+            for (Ticket ticket : tickets) {
+                if (ticket.getReturnDate() == null || !ticket.getReturnDate().isBefore(arrival)) {
+                    toRemove.add(ticket);
+                }
+            }
+        }
+        tickets.removeAll(toRemove);
+        toRemove.clear();
+
+        for (Ticket ticket : tickets) {
+            result.add(Ticket.ticketToResponseDto(ticket));
+        }
+        return result;
+    }
+
     @Override
     public List<TicketResponseDto> getAllByOneWayEquals(Boolean oneWay) {
         List<Ticket> tickets = this.ticketRepository.getAllByOneWayEquals(oneWay);
@@ -231,7 +298,15 @@ public class TicketServiceImpl implements TicketService {
         return ticketDtos;
     }
 
-
+    @Override
+    public List<TicketResponseDto> getAllByCompanyName(String company) {
+        List<Ticket> tickets = this.ticketRepository.getAllByCompanyName(company);
+        List<TicketResponseDto> ticketDtos = new ArrayList<>();
+        for (Ticket ticket : tickets) {
+            ticketDtos.add(Ticket.ticketToResponseDto(ticket));
+        }
+        return ticketDtos;
+    }
 
 
 }

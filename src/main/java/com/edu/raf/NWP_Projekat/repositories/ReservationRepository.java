@@ -7,4 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     @Transactional
     void deleteAllByTicket_Id(Long ticketID);
+
+    @Transactional
+    void deleteAllByTicket_Company_Id(Long id);
 }

@@ -21,7 +21,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/all")
-    public List<UserDto> getAllCompany(){
+    public List<UserDto> getAllUsers(){
         return this.userService.getAllUsers();
     }
 
@@ -34,7 +34,7 @@ public class UserController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<UserDto> updateCompany(@PathVariable Long id, @RequestBody User newUser){
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody User newUser){
         UserDto user = this.userService.updateUser(id, newUser);
         if(user != null){
             return ResponseEntity.ok(user);

@@ -22,9 +22,10 @@ public class CompanyController {
         return this.companyService.getAllCompanies();
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deleteCompany(@PathVariable Long id){
-        if(this.companyService.deleteCompany(id)){
+    @DeleteMapping(value = "/{name}")
+    public ResponseEntity<?> deleteCompany(@PathVariable String name){
+        CompanyDto companyDto = companyService.getByName(name);
+        if(this.companyService.deleteCompany(companyDto.getId())){
             return  ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
@@ -35,6 +36,18 @@ public class CompanyController {
         Company company = this.companyService.updateCompany(id, name);
         if(company != null){
             return ResponseEntity.ok(company);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping(value = "/editCompany/{cName}")
+    public ResponseEntity<CompanyDto> editComapny(@PathVariable String cName,@RequestBody String name){
+        System.out.println(name);
+        System.out.println(cName);
+        CompanyDto companyDto = companyService.getByName(cName);
+        Company company = this.companyService.updateCompany(companyDto.getId(), name);
+        if(company != null){
+            return ResponseEntity.ok(Company.companyToDto(company));
         }
         return ResponseEntity.notFound().build();
     }

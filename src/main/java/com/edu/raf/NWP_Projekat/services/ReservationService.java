@@ -19,4 +19,6 @@ public interface ReservationService {
     public ReservationDto getById(Long id);
 
     public void deleteAllByTicket_Id(Long id);
+
+    public void buyReservations(String username,Long reservationId);
 }

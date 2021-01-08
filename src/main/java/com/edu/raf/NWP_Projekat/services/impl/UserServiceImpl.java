@@ -3,11 +3,14 @@ package com.edu.raf.NWP_Projekat.services.impl;
 import com.edu.raf.NWP_Projekat.jwt.JwtProvider;
 import com.edu.raf.NWP_Projekat.model.LoginResponse;
 import com.edu.raf.NWP_Projekat.model.Reservation;
+import com.edu.raf.NWP_Projekat.model.Ticket;
 import com.edu.raf.NWP_Projekat.model.User;
 import com.edu.raf.NWP_Projekat.model.modelDTO.ReservationDto;
 import com.edu.raf.NWP_Projekat.model.modelDTO.ReservationsResponse;
+import com.edu.raf.NWP_Projekat.model.modelDTO.TicketDto;
 import com.edu.raf.NWP_Projekat.model.modelDTO.UserDto;
 import com.edu.raf.NWP_Projekat.model.security.LoginRequest;
+import com.edu.raf.NWP_Projekat.repositories.TicketRepository;
 import com.edu.raf.NWP_Projekat.repositories.UserRepository;
 import com.edu.raf.NWP_Projekat.services.UserService;
 import lombok.AllArgsConstructor;
@@ -22,10 +25,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 @NoArgsConstructor
@@ -43,6 +45,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private TicketRepository ticketRepository;
 
     @Override
     public boolean deleteUser(Long id) {
@@ -155,6 +160,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<ReservationsResponse> getUserBookings(String username) {
        Collection<Reservation> reservations = userRepository.getUserByUsernameEquals(username).get().getBookings();
+        for (Reservation reservation : reservations) {
+            TicketDto ticket = Ticket.ticketToDto(this.ticketRepository.findById(reservation.getTicket().getId()).get());
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.UK);
+            LocalDate departureDate = LocalDate.parse(ticket.getDepartDate(), dateTimeFormatter);
+            LocalDate currentDate = LocalDate.now();
+//            System.out.println(departureDate);
+            if(currentDate.isAfter(departureDate)){
+//                System.out.println("useooo");
+                reservation.setIsAvailable(false);
+            }
+        }
        List<ReservationsResponse> reservationDtos = new ArrayList<>();
         for (Reservation reservation : reservations) {
             reservationDtos.add(Reservation.reservationToResponse(reservation));
