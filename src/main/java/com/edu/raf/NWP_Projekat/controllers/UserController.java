@@ -64,17 +64,7 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-//    @GetMapping("/login")
-//        public ResponseEntity<UserDto> getByUsernameAndPassword(@RequestParam(value = "username", required = true) String username,
-//                                                            @RequestParam(value = "password", required = true) String password){
-//        UserDto userDto = this.userService.getByUsernameAndPassword(username, password);
-//        if(userDto != null){
-//            return ResponseEntity.ok(userDto);
-//        }
-//
-//        return ResponseEntity.notFound().build();
-//
-//    }
+
 
     @GetMapping("/userCountBooking")
     public int userCountBookings(@RequestParam(value = "username", required = true) String username){
