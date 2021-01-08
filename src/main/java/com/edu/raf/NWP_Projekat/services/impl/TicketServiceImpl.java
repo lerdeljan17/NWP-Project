@@ -61,7 +61,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public TicketDto updateTicket(Long id, TicketDto newTicket) {
-        Ticket ticket = this.ticketRepository.findById(id).orElseThrow(()->new RuntimeException("Ticket sa ID-jem " + id + " ne postoji!"));
+        Ticket ticket = this.ticketRepository.findById(id).orElseThrow(()->new RuntimeException("Ticket does not exist"));
 
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.UK);
         if(newTicket.getDepartDate() != null && !newTicket.getDepartDate().isEmpty()){
@@ -83,6 +83,35 @@ public class TicketServiceImpl implements TicketService {
             Company company = this.companyRepository.findById(newTicket.getCompany()).get();
             ticket.setCompany(company);
         }
+        if(ticket.getDepartDate().isAfter(ticket.getReturnDate())){
+            // TODO: 6.1.2021. exeption za tiket koji ima depart posle returna
+            throw new TicketException("Depart date can not be after return date");
+//                System.out.println("exeption za tiket koji ima depart posle returna");
+//                return null;
+        }
+
+        if(ticket.getCount()<1){
+            // TODO: 6.1.2021. exc
+            throw new TicketException("Ticket count must be at least one");
+//            System.out.println("exeption za tiket koji je oneway a prosledjen je datum");
+//            return null;
+        }
+
+        if(ticket.getOneWay() == true && (ticket.getReturnDate() != null)){
+            // TODO: 6.1.2021. exeption za tiket koji je oneway a prosledjen je datum
+            throw new TicketException("A one way ticket can not have a return date");
+//            System.out.println("exeption za tiket koji je oneway a prosledjen je datum");
+//            return null;
+        }
+
+        if(ticket.getOneWay() == false && (ticket.getReturnDate() == null)){
+            // TODO: 6.1.2021. exeption za tiket koji je two way a nije prosledjen je datum
+            throw new TicketException("A two way ticket must have a return date");
+//            System.out.println("exeption za tiket koji je two way a nije prosledjen je datum ");
+//            return null;
+        }
+
+
 
         if(ticket != null){
             this.ticketRepository.save(ticket);
@@ -110,7 +139,7 @@ public class TicketServiceImpl implements TicketService {
             }
         }
         if(ticketDto.getCount()<1){
-            // TODO: 6.1.2021. exeption za tiket koji je oneway a prosledjen je datum
+            // TODO: 6.1.2021. exc
             throw new TicketException("Ticket count must be at least one");
 //            System.out.println("exeption za tiket koji je oneway a prosledjen je datum");
 //            return null;
