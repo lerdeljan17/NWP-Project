@@ -18,7 +18,7 @@ public class TicketController {
     private TicketService ticketService;
 
     @GetMapping("/all")
-    public List<TicketResponseDto> getAllFlights(@RequestParam(name = "oneWay",required = false)String oneWay){
+    public List<TicketResponseDto> getAllTickets(@RequestParam(name = "oneWay",required = false)String oneWay){
         if(oneWay == null || oneWay.equals("null")) {
             return this.ticketService.getAllTickets();
         }else if(oneWay.equals("true")){
@@ -30,7 +30,7 @@ public class TicketController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deleteFlight(@PathVariable Long id){
+    public ResponseEntity<?> deleteTicket(@PathVariable Long id){
         if(this.ticketService.deleteTicket(id)){
             return  ResponseEntity.ok().build();
         }
