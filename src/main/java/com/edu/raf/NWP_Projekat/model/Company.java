@@ -25,7 +25,7 @@ public class Company {
     private Long id;
 
 //    @Pattern(value = "^[A-Za-z0-9]+$")
-    @Pattern(regexp="^[A-Za-z0-9]+$",message="comapny name must only contain alphanumreic chars")
+    @Pattern(regexp="^[A-Za-z0-9 ]+$",message="comapny name must only contain alphanumreic chars")
     @Column(unique = true, nullable = false)
     private String name;
 
