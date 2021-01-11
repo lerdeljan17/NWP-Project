@@ -69,6 +69,8 @@ public class TicketServiceImpl implements TicketService {
         }
         if(newTicket.getReturnDate() != null && !newTicket.getReturnDate().isEmpty()){
             ticket.setReturnDate(LocalDate.parse(newTicket.getReturnDate(), dateTimeFormatter));
+        }else {
+            ticket.setReturnDate(null);
         }
 
         if(newTicket.getCount() != null) ticket.setCount(newTicket.getCount());
@@ -83,7 +85,7 @@ public class TicketServiceImpl implements TicketService {
             Company company = this.companyRepository.findById(newTicket.getCompany()).get();
             ticket.setCompany(company);
         }
-        if(ticket.getDepartDate().isAfter(ticket.getReturnDate())){
+        if(ticket.getReturnDate() != null && ticket.getDepartDate().isAfter(ticket.getReturnDate())){
             // TODO: 6.1.2021. exeption za tiket koji ima depart posle returna
             throw new TicketException("Depart date can not be after return date");
 //                System.out.println("exeption za tiket koji ima depart posle returna");
