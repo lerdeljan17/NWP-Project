@@ -52,6 +52,7 @@ public class UserController {
             throw new UserException("Not a valid user type");
         }
 
+
         return this.userService.addUser(user);
     }
 
